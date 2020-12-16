@@ -36,7 +36,9 @@ public class ConsoleColors {
     public static final String BLUE_UNDERLINED = "\033[4;34m";   // BLUE
     public static final String PURPLE_UNDERLINED = "\033[4;35m"; // PURPLE
     public static final String CYAN_UNDERLINED = "\033[4;36m";   // CYAN
-    public static final String WHITE_UNDERLINED = "\033[4;37m";  // WHITE
+    public static final String WHITE_UNDERLINED = "\033[4;38m";  // WHITE
+
+    public static final String NEUTRAL_UNDERLINED = "\033[4;38m"; // NEUTRAL
 
     // Background
     public static final String BLACK_BACKGROUND = "\033[40m";  // BLACK

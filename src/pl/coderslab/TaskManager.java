@@ -12,22 +12,29 @@ public class TaskManager {
 
         Path file = Paths.get("tasks.csv");
 
+        printMenu();
+
+
+        /**
+         * ODCZYT LICZBY ZADAŃ UMIESZCZONYCH W PLIKU
+         */
+
         int tasksCounter = 0;
-
-
-        /** ODCZYT LICZBY ZADAŃ UMIESZCZONYCH W PLIKU */
 
         try {
             for (String line : Files.readAllLines(file)) {
                 tasksCounter += 1;
             }
-        } catch (IOException e) {
+        } catch (
+                IOException e) {
             System.out.println("Brak pliku!");
             e.printStackTrace();
         }
 
 
-        /** WYPEŁNIENIE TABLICY DANYMI Z PLIKU */
+        /**
+         * WYPEŁNIENIE TABLICY DANYMI Z PLIKU
+         */
 
         String[][] tasks = new String[tasksCounter][3];
         // TODO W materiałach przed "String[][]" było jeszcze "static". Dlaczego?
@@ -47,20 +54,42 @@ public class TaskManager {
 
             /** WYŚWIETLENIE LISTY ZADAŃ Z TABLICY */
 
-            System.out.println("list");
-
-            for (int i = 0; i < tasksCounter; i++) {
-                System.out.print(i + " : ");
-                for (int j = 0; j < 3; j++) {
-                    System.out.print(tasks[i][j]);
-                    System.out.print("  ");
-                }
-                System.out.println();
-            }
+            listTasks(tasksCounter, tasks);
 
 
-        } catch (IOException e) {
+        } catch (
+                IOException e) {
             System.out.println("Brak pliku!");
         }
+    }
+
+    private static void listTasks(int tasksCounter, String[][] tasks) {
+        System.out.println("list");
+
+        for (int i = 0; i < tasksCounter; i++) {
+            System.out.print(i + " : ");
+            for (int j = 0; j < 3; j++) {
+                System.out.print(tasks[i][j]);
+                System.out.print("  ");
+            }
+            System.out.println();
+        }
+    }
+
+    private static void printMenu() {
+        String[] commands = new String[4];
+        commands[0] = ConsoleColors.NEUTRAL_UNDERLINED + "a" + ConsoleColors.RESET + "dd";
+        commands[1] = ConsoleColors.NEUTRAL_UNDERLINED + "r" + ConsoleColors.RESET + "emove";
+        commands[2] = ConsoleColors.NEUTRAL_UNDERLINED + "l" + ConsoleColors.RESET + "ist";
+        commands[3] = ConsoleColors.NEUTRAL_UNDERLINED + "e" + ConsoleColors.RESET + "xit";
+
+        System.out.println(ConsoleColors.BLUE
+                + "Please select an option:"
+                + ConsoleColors.RESET);
+
+        for (int i = 0; i < 4; i++) {
+            System.out.println(commands[i]);
+        }
+        System.out.println();
     }
 }
