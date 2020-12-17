@@ -1,15 +1,21 @@
 package pl.coderslab;
 
+import org.apache.commons.validator.GenericValidator;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Date;
+import java.util.Locale;
 import java.util.Scanner;
 
 public class TaskManager {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws ParseException {
 
         System.out.println();
         Path file = Paths.get("tasks.csv");
@@ -65,7 +71,7 @@ public class TaskManager {
     } // TODO Czym są inferred annotaitons?
 
 
-    private static void navigation(int tasksCounter, String[][] tasks) {
+    private static void navigation(int tasksCounter, String[][] tasks) throws ParseException {
         Scanner choice = new Scanner(System.in);
         String next = choice.next();
 
@@ -101,7 +107,7 @@ public class TaskManager {
     }
 
 
-    private static void printMenu(int tasksCounter, String[][] tasks) {
+    private static void printMenu(int tasksCounter, String[][] tasks) throws ParseException {
         String[] commands = new String[4];
         commands[0] = ConsoleColors.NEUTRAL_UNDERLINED + "a" + ConsoleColors.RESET + "dd";
         commands[1] = "                         " + ConsoleColors.NEUTRAL_UNDERLINED + "r" + ConsoleColors.RESET + "emove";
@@ -120,7 +126,7 @@ public class TaskManager {
     }
 
 
-    private static String[][] addTask(int tasksCounter, String[][] tasks) {
+    private static String[][] addTask(int tasksCounter, String[][] tasks) throws ParseException {
 
         tasks = Arrays.copyOf(tasks, tasks.length + 1);
 
@@ -129,16 +135,28 @@ public class TaskManager {
         Scanner scan = new Scanner(System.in);
 
         System.out.println("Please add task description");
-        tasks[tasks.length - 1][0] = scan.next();
+        tasks[tasks.length - 1][0] = scan.nextLine();
 
-        System.out.println("Please add task due date");
-        tasks[tasks.length - 1][1] = scan.next();
 
-        System.out.println("Is your task important? "
-                + ConsoleColors.NEUTRAL_UNDERLINED + "t" + ConsoleColors.RESET + "rue/"
-                + ConsoleColors.NEUTRAL_UNDERLINED + "f" + ConsoleColors.RESET + "alse");
+        System.out.println("Please add task due date (YYYY-MM-DD)");
+
+        String date = scan.next();
+
+        while (!GenericValidator.isDate(date, "yyyy-MM-dd", true)) {
+
+            System.out.println("Please enter the correct value (YYYY-MM-DD)");
+            date = scan.next();
+        }
+        tasks[tasks.length - 1][1] = date;
+
+
+        System.out.println("Is your task important? (true/false)");
+
+        while (!scan.hasNextBoolean()) {
+            System.out.println("Please enter the correct value (true/false)");
+            scan.next();
+        }
         tasks[tasks.length - 1][2] = scan.next();
-
 
         System.out.print("\n\n");
         printMenu(tasksCounter, tasks);
@@ -147,7 +165,7 @@ public class TaskManager {
     }
 
 
-    private static void removeTask(int tasksCounter, String[][] tasks) {
+    private static void removeTask(int tasksCounter, String[][] tasks) throws ParseException {
         System.out.println("Opcja \"remove\" nie jest jeszcze obsługiwana");
 
         System.out.print("\n\n");
@@ -155,17 +173,51 @@ public class TaskManager {
     }
 
 
-    private static void listTasks(int tasksCounter, String[][] tasks) {
+    private static void listTasks(int tasksCounter, String[][] tasks) throws ParseException {
 
+
+        //  Date date = new Date(); // This object contains the current date value
+
+        // We can format this date easily:
+
+        // SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+        // System.out.println(formatter.format(date));
+
+        // And running this piece of code would yield:
+
+        //  05-02-2020 10:12:46
+
+
+        SimpleDateFormat formatter2 = new SimpleDateFormat("yyyy-MM-dd"); ///////////////////
 
         for (int i = 0; i < tasks.length; i++) {
             System.out.print(i + " : ");
             for (int j = 0; j < 3; j++) {
+
+                if (j == 0 && tasks[i][2].equals("true")) {
+                    System.out.print(ConsoleColors.NEUTRAL_UNDERLINED); // podkreślenie jeśli zadanie jest ważne
+                }
+
+             /*   Date today = new Date();
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+
+
+                System.out.println(simpleDateFormat.format(today));
+
+                if ((j == 1) && (
+
+                        simpleDateFormat.format(today).compareTo(formatter2.parse(tasks[i][j])) > 0)
+                ) {
+                    System.out.print(ConsoleColors.RED_BACKGROUND);
+                }
+*/
                 System.out.print(tasks[i][j]);
+                System.out.print(ConsoleColors.RESET);
                 System.out.print("  ");
+
+
             }
             System.out.println();
-
         }
         System.out.print("\n\n");
         printMenu(tasksCounter, tasks);
