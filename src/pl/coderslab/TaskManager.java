@@ -5,35 +5,44 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
-import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class TaskManager {
 
     public static void main(String[] args) {
 
+        System.out.println();
         Path file = Paths.get("tasks.csv");
 
-        /**
-         * ODCZYT LICZBY ZADAŃ UMIESZCZONYCH W PLIKU
-         */
+        int tasksCounter = tasksCounter(file); // Odczyt liczby zadań w pliku
+
+        String[][] tasks = tableCreator(file, tasksCounter); // Wypełnienie tablicy danymi z pliku
+
+
+        printMenu(tasksCounter, tasks);
+
+        navigation(tasksCounter, tasks); // Odczyt komendy z klawiatury
+
+    }
+
+
+    private static int tasksCounter(Path file) {
 
         int tasksCounter = 0;
 
         try {
-            for (String line : Files.readAllLines(file)) {
+            for (String line : Files.readAllLines(file)) { // TODO Czy mogę jakoś usunąć to "line"?
                 tasksCounter += 1;
             }
-        } catch (
-                IOException e) {
-            System.out.println("Brak pliku!");
-            e.printStackTrace();
+        } catch (IOException e) {
+            System.out.println(ConsoleColors.RED_BOLD_BRIGHT + "Error! File does not exist.");
+            System.exit(0);
         }
+        return tasksCounter;
+    }
 
-        /**
-         * WYPEŁNIENIE TABLICY DANYMI Z PLIKU
-         */
 
+    private static String[][] tableCreator(Path file, int tasksCounter) {
         String[][] tasks = new String[tasksCounter][3];
         // TODO W materiałach przed "String[][]" było jeszcze "static". Dlaczego?
 
@@ -48,22 +57,15 @@ public class TaskManager {
                     tasks[i][2] = parts[2];
                 }
             }
-
-
-        } catch (
-                IOException e) {
-            System.out.println("Brak pliku!");
+        } catch (IOException e) {
+            System.out.println(ConsoleColors.RED_BOLD_BRIGHT + "Error! File does not exist.");
+            System.exit(0);
         }
+        return tasks;
+    } // TODO Czym są inferred annotaitons?
 
 
-        printMenu(tasksCounter, tasks);
-
-
-        surway(tasksCounter, tasks);
-
-    }
-
-    private static void surway(int tasksCounter, String[][] tasks) {
+    private static void navigation(int tasksCounter, String[][] tasks) {
         Scanner choice = new Scanner(System.in);
         String next = choice.next();
 
@@ -90,12 +92,14 @@ public class TaskManager {
             case "E":
             case "exit":
             case "EXIT":
-                exit();
+                System.out.println(ConsoleColors.RED + "Bye, bye.");
+                System.exit(0);
                 break;
             default:
                 System.out.println("Please select a correct option");
         }
     }
+
 
     private static void printMenu(int tasksCounter, String[][] tasks) {
         String[] commands = new String[4];
@@ -105,73 +109,43 @@ public class TaskManager {
         commands[3] = "                         " + ConsoleColors.NEUTRAL_UNDERLINED + "e" + ConsoleColors.RESET + "xit";
 
 
-        System.out.print("\n" + ConsoleColors.BLUE + "Please select an option: " + ConsoleColors.RESET);
+        System.out.print(ConsoleColors.BLUE + "Please select an option: " + ConsoleColors.RESET);
 
         for (int i = 0; i < 4; i++) {
             System.out.println(commands[i]);
         }
         System.out.println();
 
-        surway(tasksCounter, tasks);
+        navigation(tasksCounter, tasks);
     }
 
-    private static void addTask(int tasksCounter, String[][] tasks) {
-        System.out.println("Sekcja jeszcze nieobsługiwana");
 
-        /*
+    private static String[][] addTask(int tasksCounter, String[][] tasks) {
+
         tasks = Arrays.copyOf(tasks, tasks.length + 1);
+
+        tasks[tasks.length - 1] = new String[3];
+
+        Scanner scan = new Scanner(System.in);
+
         System.out.println("Please add task description");
-        Scanner description = new Scanner(System.in);
-        String taskDescription = description.next();
+        tasks[tasks.length - 1][0] = scan.next();
 
-        tasks[tasks.length - 1][0] = taskDescription;
+        System.out.println("Please add task due date");
+        tasks[tasks.length - 1][1] = scan.next();
 
-        System.out.println(Arrays.toString(tasks[2]));
-
-
-
-
-
-
-        System.out.println("przed");
-
-        System.out.println("po");
-        for (int i = 0; i < tasksCounter; i++) {
-            System.out.print(i + " : ");
-            for (int j = 0; j < 3; j++) {
-                System.out.print(tasks[i][j]);
-                System.out.print("  ");
-            }
-            System.out.println();
+        System.out.println("Is your task important? "
+                + ConsoleColors.NEUTRAL_UNDERLINED + "t" + ConsoleColors.RESET + "rue/"
+                + ConsoleColors.NEUTRAL_UNDERLINED + "f" + ConsoleColors.RESET + "alse");
+        tasks[tasks.length - 1][2] = scan.next();
 
 
-//////////////////////////////////////////////////
+        System.out.print("\n\n");
+        printMenu(tasksCounter, tasks);
 
-            System.out.println("Podaj liczbę całkowitą:");
-            Scanner scan = new Scanner(System.in);
-            try {
-                int number = scan.nextInt();
-                System.out.println(number);
-            } catch (InputMismatchException e) {
-                System.out.println("Niepoprawne dane");
-            }
-
-            System.out.println("Is your task important? "
-                    + ConsoleColors.NEUTRAL_UNDERLINED + "t" + ConsoleColors.RESET + "rue/"
-                    + ConsoleColors.NEUTRAL_UNDERLINED + "f" + ConsoleColors.RESET + "alse");
-
-            Scanner scan2 = new Scanner(System.in);
-            try {
-                boolean number = scan2.nextBoolean();
-                System.out.println(number);
-            } catch (InputMismatchException e) {
-                System.out.println("Niepoprawne dane");
-            }
-
-            printMenu(tasksCounter, tasks);
-        }
-        */
+        return tasks;
     }
+
 
     private static void removeTask(int tasksCounter, String[][] tasks) {
         System.out.println("Opcja \"remove\" nie jest jeszcze obsługiwana");
@@ -180,10 +154,11 @@ public class TaskManager {
         printMenu(tasksCounter, tasks);
     }
 
+
     private static void listTasks(int tasksCounter, String[][] tasks) {
 
 
-        for (int i = 0; i < tasksCounter; i++) {
+        for (int i = 0; i < tasks.length; i++) {
             System.out.print(i + " : ");
             for (int j = 0; j < 3; j++) {
                 System.out.print(tasks[i][j]);
@@ -194,10 +169,5 @@ public class TaskManager {
         }
         System.out.print("\n\n");
         printMenu(tasksCounter, tasks);
-    }
-
-    private static void exit() {
-        System.out.println(ConsoleColors.RED + "Bye, bye.");
-        System.exit(0);
     }
 }
