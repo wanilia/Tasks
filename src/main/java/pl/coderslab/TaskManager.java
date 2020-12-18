@@ -166,26 +166,43 @@ public class TaskManager {
 
 
     private static void removeTask(int tasksCounter, String[][] tasks) throws ParseException {
-        System.out.println("Opcja \"remove\" nie jest jeszcze obsługiwana");
+
+        Scanner scan = new Scanner(System.in);
+        boolean isCorrect = true;
+        int number;
+
+        System.out.println("Please select number to remove");
+
+
+        while (isCorrect) {
+
+            try {
+                while (!scan.hasNextInt()) {
+                    System.out.println("Incorrect argument passed. Please give a number");
+                    scan.next();
+                }
+
+                number = scan.nextInt();
+
+                if (number >= 0 && number < tasks.length) {
+                    isCorrect = false;
+                }
+
+                tasks[number][0] = "XDDD";
+            } catch (ArrayIndexOutOfBoundsException e) {
+                System.out.println("Incorrect argument passed. Please give number between 0 and " + (tasks.length - 1));
+            }
+        }
+
 
         System.out.print("\n\n");
+
         printMenu(tasksCounter, tasks);
+
     }
 
 
     private static void listTasks(int tasksCounter, String[][] tasks) throws ParseException {
-
-
-        //  Date date = new Date(); // This object contains the current date value
-
-        // We can format this date easily:
-
-        // SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
-        // System.out.println(formatter.format(date));
-
-        // And running this piece of code would yield:
-
-        //  05-02-2020 10:12:46
 
 
         SimpleDateFormat formatter2 = new SimpleDateFormat("yyyy-MM-dd"); ///////////////////
@@ -198,19 +215,7 @@ public class TaskManager {
                     System.out.print(ConsoleColors.NEUTRAL_UNDERLINED); // podkreślenie jeśli zadanie jest ważne
                 }
 
-             /*   Date today = new Date();
-                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
-
-                System.out.println(simpleDateFormat.format(today));
-
-                if ((j == 1) && (
-
-                        simpleDateFormat.format(today).compareTo(formatter2.parse(tasks[i][j])) > 0)
-                ) {
-                    System.out.print(ConsoleColors.RED_BACKGROUND);
-                }
-*/
                 System.out.print(tasks[i][j]);
                 System.out.print(ConsoleColors.RESET);
                 System.out.print("  ");
